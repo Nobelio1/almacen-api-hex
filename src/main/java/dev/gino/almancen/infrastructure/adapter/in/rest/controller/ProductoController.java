@@ -1,6 +1,7 @@
 package dev.gino.almancen.infrastructure.adapter.in.rest.controller;
 
 import dev.gino.almancen.domain.model.Producto;
+import dev.gino.almancen.domain.port.in.ConsultarProductoUseCase;
 import dev.gino.almancen.domain.port.in.CrearProductoUseCase;
 import dev.gino.almancen.domain.port.in.RegistrarEntradaStockUseCase;
 import dev.gino.almancen.domain.port.in.RegistrarSalidaStockUseCase;
@@ -16,21 +17,30 @@ public class ProductoController {
     private final CrearProductoUseCase crearProductoUseCase;
     private final RegistrarEntradaStockUseCase registrarEntradaStockUseCase;
     private final RegistrarSalidaStockUseCase registrarSalidaStockUseCase;
+    private final ConsultarProductoUseCase consultarProductoUseCase;
 
     public ProductoController(
             CrearProductoUseCase crearProductoUseCase,
             RegistrarEntradaStockUseCase registrarEntradaStockUseCase,
-            RegistrarSalidaStockUseCase registrarSalidaStockUseCase
+            RegistrarSalidaStockUseCase registrarSalidaStockUseCase,
+            ConsultarProductoUseCase consultarProductoUseCase
     ) {
         this.crearProductoUseCase = crearProductoUseCase;
         this.registrarEntradaStockUseCase = registrarEntradaStockUseCase;
         this.registrarSalidaStockUseCase = registrarSalidaStockUseCase;
+        this.consultarProductoUseCase = consultarProductoUseCase;
     }
 
     @PostMapping
     public ResponseEntity<Producto> crearProducto(@RequestBody ProductoRequest request) {
         Producto productoDominio = new Producto(request.getSku(), request.getNombre());
         Producto productoCreado = crearProductoUseCase.crearProducto(productoDominio);
+        return ResponseEntity.ok(productoCreado);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Producto> consultarPorId(@PathVariable Long id) {
+        Producto productoCreado = consultarProductoUseCase.consultarPorId(id);
         return ResponseEntity.ok(productoCreado);
     }
 
